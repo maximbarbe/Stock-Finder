@@ -6,22 +6,25 @@ import requests
 
 # Scrape the source code
 def get_source_code(driver: Chrome, url: str) -> BeautifulSoup:
-    tags = []
     try:
+        # Visit the page
         driver.get(url=url)
     except:
         print("Error loading the page!")
         quit()
+    # Execute a javascript script to get the source code
     source_code = driver.execute_script("return document.body.innerHTML")
+    # Parse the code.
     html_code: BeautifulSoup = BeautifulSoup(source_code, "html.parser")
-    print(html_code)
     return html_code
 
 # Create a dict for the stock charts and tickers.
 def get_stock_charts(source_code: BeautifulSoup) -> dict:
     charts_url = {}
+    # Find all anchor tags with 'border-text', that's how we find the stocks.
     stocks = source_code.find_all("a", {"class": "border-text"})
     for stock in stocks:
+        # Extract the ticker and the image link from the anchor tag.
         ticker = get_ticker(stock)
         img_link = get_img_link(stock)
         charts_url[ticker] = img_link
@@ -35,3 +38,6 @@ def get_ticker(stock) -> str:
 def get_img_link(stock) -> str:
     return stock.img['src']
 
+# Function to download the images from the web
+def add_images(stocks: dict) -> None:
+    pass
