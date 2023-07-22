@@ -1,11 +1,14 @@
 from bs4 import BeautifulSoup
 from selenium.webdriver import Chrome
+from selenium.webdriver.chrome.options import Options
 import time
 import requests
 
 
 # Scrape the source code
-def get_source_code(driver: Chrome, url: str) -> BeautifulSoup:
+def get_source_code(options: Options, chart_num: int, url: str) -> BeautifulSoup:
+    driver = Chrome(options=options)
+    driver.set_page_load_timeout(5)
     try:
         # Visit the page
         driver.get(url=url)
@@ -16,6 +19,7 @@ def get_source_code(driver: Chrome, url: str) -> BeautifulSoup:
     source_code = driver.execute_script("return document.body.innerHTML")
     # Parse the code.
     html_code: BeautifulSoup = BeautifulSoup(source_code, "html.parser")
+    driver.quit()
     return html_code
 
 # Create a dict for the stock charts and tickers.
