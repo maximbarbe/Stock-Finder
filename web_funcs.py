@@ -2,9 +2,9 @@ from bs4 import BeautifulSoup
 from selenium.webdriver import Chrome
 import time
 import requests
-import os
 
 
+# Scrape the source code
 def get_source_code(driver: Chrome, url: str) -> BeautifulSoup:
     tags = []
     try:
@@ -16,6 +16,7 @@ def get_source_code(driver: Chrome, url: str) -> BeautifulSoup:
     html_code: BeautifulSoup = BeautifulSoup(source_code, "html.parser")
     return html_code
 
+# Create a dict for the stock charts and tickers.
 def get_stock_charts(source_code: BeautifulSoup) -> dict:
     charts_url = {}
     stocks = source_code.find_all("a", {"class": "border-text"})
@@ -25,9 +26,11 @@ def get_stock_charts(source_code: BeautifulSoup) -> dict:
         charts_url[ticker] = img_link
     return charts_url
 
+# Function to get the ticker from the alternate name of the image
 def get_ticker(stock) -> str:
     return stock.img['alt'].split(" ")[0]
-    
+
+# Function to get the source of the image    
 def get_img_link(stock) -> str:
     return stock.img['src']
 
