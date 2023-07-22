@@ -14,6 +14,7 @@ def get_source_code(driver: Chrome, url: str) -> BeautifulSoup:
         quit()
     source_code = driver.execute_script("return document.body.innerHTML")
     html_code: BeautifulSoup = BeautifulSoup(source_code, "html.parser")
+    print(html_code)
     return html_code
 
 # Create a dict for the stock charts and tickers.
