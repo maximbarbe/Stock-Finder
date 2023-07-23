@@ -1,7 +1,7 @@
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from web_funcs import get_stock_charts, get_pages
+from web_funcs import get_stock_charts, get_pages, add_images
+from helpers import create_folder
 
 # Chrome driver settings
 chrome_options = Options()
@@ -17,6 +17,9 @@ all_charts = {}
 
 source_codes = get_pages(driver, url=f"https://finviz.com/screener.ashx?v=211&f=sh_avgvol_o500,sh_relvol_o0.5,ta_pattern_channelup2&ft=4")
 charts = get_stock_charts(source_code=source_codes)
-print(charts)
+create_folder()
+
+for ticker, url in charts.items():
+    add_images(ticker, url)
         
 

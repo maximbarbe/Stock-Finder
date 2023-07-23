@@ -1,9 +1,12 @@
 from bs4 import BeautifulSoup
 from selenium.webdriver import Chrome
 from selenium.webdriver.common.by import By
-import time
 import requests
 
+
+HEADERS = {
+    "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36"
+}
 
 # Scrape the source code
 def get_pages(driver: Chrome,  url: str) -> list[BeautifulSoup]:
@@ -66,5 +69,9 @@ def get_img_link(stock) -> str:
     return stock.img['src']
 
 # Function to download the images from the web
-def add_images(stocks: dict) -> None:
-    pass
+def add_images(ticker: str, url: str) -> None:
+    # Headers so we can get the images from the urls
+
+    response = requests.get(url=url, headers=HEADERS).content
+    with open(f"./stock/{ticker}.jpg", "wb") as img:
+        img.write(response)

@@ -1,7 +1,11 @@
 import os
-
-def check_folder_existing():
+import shutil
+def create_folder():
+    
     try:
         os.mkdir("./stock")
     except OSError:
-        return
+        shutil.rmtree("./stock")
+        os.mkdir("./stock")
+
+
