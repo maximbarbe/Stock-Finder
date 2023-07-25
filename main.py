@@ -2,6 +2,8 @@ from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
 from web_funcs import get_stock_charts, get_pages, add_images
 from helpers import create_folder
+from app import Application, MainWindow 
+import sys
 
 # Chrome driver settings
 chrome_options = Options()
@@ -19,7 +21,13 @@ source_codes = get_pages(driver, url=f"https://finviz.com/screener.ashx?v=211&f=
 charts = get_stock_charts(source_code=source_codes)
 create_folder()
 
+# Download the images from the web
 for ticker, url in charts.items():
     add_images(ticker, url)
         
+# PyQT6 application
+app = Application()
+view = MainWindow(tickers=ticker)
 
+view.show()
+sys.exit(app.exec())
