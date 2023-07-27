@@ -1,13 +1,18 @@
-from PySide6.QtCore import (QRect, Qt)
+from PySide6.QtCore import (QRect, Qt, QVariantAnimation, QAbstractAnimation)
 from PySide6.QtGui import QPixmap, QFont, QCursor
 from PySide6.QtWidgets import (QApplication, QLabel, QMainWindow, QPushButton, QWidget)
 import sys
+import os
+import functools
 
+# Node for the carousel
 class ListNode:
-    def __init__(self, url, next: None):
+    def __init__(self, url, next = None):
         self.url = url
         self.next = next
 
+
+# Carousel for the images based on a linked list.
 class Carousel:
 
     def __init__(self, images):
@@ -26,11 +31,12 @@ class Carousel:
 
     
 
-
+# PyQT6 main window settings.
 class MainWindow(QMainWindow):
     def __init__(self, tickers: list):
-        self.tickers = tickers
         super().__init__()
+        self.tickers = Carousel(tickers)
+        self.current_node = self.tickers.head
         if not self.objectName():
             self.setObjectName("MainWindow")
         self.setWindowTitle("Stock tinder")
@@ -58,14 +64,11 @@ class MainWindow(QMainWindow):
                 background-color: #dc3545;
             }      
 
-            QPushButton:hover {
-                background-color: black;
-            }
         """)
         self.stock_image = QLabel(self.centralwidget)
         self.stock_image.setObjectName("stock_image")
         self.stock_image.setGeometry(QRect(308, 170, 461, 231))
-        self.stock_image.setPixmap(QPixmap("./stock/FDX.jpg"))
+        self.stock_image.setPixmap(QPixmap(f"./stock/{self.tickers.head.url}.jpg"))
 
         self.upvote = QPushButton(self.centralwidget)
         self.upvote.setObjectName("upvote")
@@ -86,14 +89,25 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.centralwidget)
         self.upvote.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.downvote.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.upvote.clicked.connect(self.update_pixmap)
+        self.downvote.clicked.connect(self.downvote_clicked)
 
+    # Deletes the picture when downvote button clicked and changes picture.
+    def downvote_clicked(self):
+        try:
+            os.remove(f"./stock/{self.current_node.url}.jpg")
+        except FileNotFoundError:
+            return
+        self.update_pixmap()
 
+    # Changes the picture when a button is clicked
+    def update_pixmap(self):
+        if not self.current_node.next:
+            return
+        else:
+            self.stock_image.setPixmap(QPixmap(f"./stock/{self.current_node.next.url}.jpg"))
+            self.current_node = self.current_node.next
 class Application(QApplication):
     def __init__(self):
         super().__init__(sys.argv)
 
-app = Application()
-view = MainWindow(None)
-
-view.show()
-sys.exit(app.exec())
